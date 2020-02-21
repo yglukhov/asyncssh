@@ -1,18 +1,21 @@
-# asyncssh
-High level async libssh2 wrapper
+import asyncssh
+import asyncdispatch, times
 
-- Supports tunneling. SSHSessions can be made on top of other SSHSessions.
+from os import expandTilde
 
-```nim
-import asyncdispatch, asyncssh, times
+let
+  localSshPubKey = expandTilde("~/.ssh/id_rsa.pub")
+  localSshPrivKey = expandTilde("~/.ssh/id_rsa")
 
 proc main() {.async.} =
   # Login with username/password. Alternative methods are available.
-  let s = await newSSHSession("myhost.local", Port(22), "root", "mySecurePassword")
+  let s = await newSSHSession("127.0.0.1", Port(22), "root",
+      localSshPubKey, localSshPrivKey)
   # Put file
-  await s.putFile(path = "hello.txt", mode = 0666, mtime = now(), atime = now(),
+  await s.putFile(path = "hello.txt", mode = 0o666,
+                  mtime = now(), atime = now(),
                   content = "Hello world!")
-  # Get file
+  # # Get file
   let content = await s.getFile(path = "hello.txt")
   assert(content == "Hello world!")
 
@@ -25,5 +28,3 @@ proc main() {.async.} =
   s.shutdown()
 
 waitFor main()
-```
-
