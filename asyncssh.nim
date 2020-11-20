@@ -165,7 +165,7 @@ proc newProxiedSSHSession*(proxySession: SSHSession, host: string, port: Port, u
 proc shutdown*(s: SSHSession) =
   discard s.sess.sessionDisconnect("Normal shutdown, thank you for playing")
   discard s.sess.sessionFree()
-  discard s.sock.closeSocket()
+  s.sock.closeSocket()
   # libssh2.exit()
   # quit()
 
